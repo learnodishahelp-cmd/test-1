@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="or">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class 7 Math Quiz: Work and Time</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Oriya:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --success: #28a745;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        body {
+            font-family: 'Noto Sans Oriya', sans-serif;
+            background-color: #eef2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .quiz-body {
+            padding: 20px;
+        }
+
+        .question-section {
+            margin-bottom: 20px;
+        }
+
+        .question-count {
+            color: #777;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            color: var(--dark);
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .options-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .option-btn {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Noto Sans Oriya', sans-serif;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #f0f0f0;
+            border-color: #bbb;
+        }
+
+        /* Logic for Colors */
+        .option-btn.correct {
+            background-color: #d4edda;
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .option-btn.wrong {
+            background-color: #f8d7da;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .next-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: 'Noto Sans Oriya', sans-serif;
+            display: none; /* Hidden initially */
+        }
+
+        /* Result Section */
+        .result-section {
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+
+        .score-display {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .explanation-container {
+            text-align: left;
+            margin-top: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+        }
+
+        .explanation-item {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
+        
+        .exp-q { font-weight: bold; color: var(--dark); }
+        .exp-ans { color: var(--success); font-weight: bold; }
+        .exp-text { color: #555; margin-top: 5px; font-size: 0.95rem;}
+
+        .restart-btn {
+            background: var(--dark);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-family: 'Noto Sans Oriya', sans-serif;
+        }
+
+        /* Hide elements helper */
+        .hide { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>ଗଣିତ କୁଇଜ୍ (Math Quiz)</h1>
+        <p>କାର୍ଯ୍ୟ ଏବଂ ସମୟ (Class 7)</p>
+    </header>
+
+    <div class="quiz-body" id="quiz-screen">
+        <div class="question-count">
+            ପ୍ରଶ୍ନ <span id="current-q">1</span> / <span id="total-q">30</span>
+        </div>
+        <div class="question-text" id="question">Loading...</div>
+        <div class="options-list" id="options">
+            </div>
+    </div>
+
+    <div class="footer">
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">ପରବର୍ତ୍ତୀ ପ୍ରଶ୍ନ (Next)</button>
+    </div>
+
+    <div class="result-section" id="result-screen">
+        <h2>କୁଇଜ୍ ସମାପ୍ତ! (Quiz Completed)</h2>
+        <div class="score-display">
+            ଆପଣଙ୍କ ସ୍କୋର: <span id="score">0</span> / 30
+        </div>
+        <button class="restart-btn" onclick="restartQuiz()">ପୁନର୍ବାର ଆରମ୍ଭ କରନ୍ତୁ</button>
+        
+        <div style="margin-top:20px; font-weight:bold; text-align:left;">ବିସ୍ତୃତ ବ୍ୟାଖ୍ୟା (Explanations):</div>
+        <div class="explanation-container" id="explanation-list">
+            </div>
+    </div>
+</div>
+
+<script>
+    // 30 Questions Data in Odia
+    const questions = [
+        {
+            q: "ଯଦି ରାମ ଗୋଟିଏ କାମକୁ ୧୦ ଦିନରେ କରିପାରେ, ତେବେ ୧ ଦିନରେ ସେ କେତେ ଅଂଶ କାମ କରିବ?",
+            options: ["୧/୫", "୧/୧୦", "୧୦", "୧"],
+            correct: 1,
+            explanation: "ଯଦି ସମୁଦାୟ କାମ କରିବାକୁ ୧୦ ଦିନ ଲାଗେ, ତେବେ ୧ ଦିନର କାମ = ୧/୧୦ ଅଂଶ ।"
+        },
+        {
+            q: "୫ ଜଣ ଲୋକ ଗୋଟିଏ କାମକୁ ୧୦ ଦିନରେ କରନ୍ତି। ସେହି କାମକୁ ୧ ଜଣ ଲୋକ କେତେ ଦିନରେ କରିବ?",
+            options: ["୫ ଦିନ", "୧୦ ଦିନ", "୫୦ ଦିନ", "୨ ଦିନ"],
+            correct: 2,
+            explanation: "ଲୋକ କମିଲେ ସମୟ ବଢିବ। ୧ ଜଣ ପାଇଁ ସମୟ = ୫ × ୧୦ = ୫୦ ଦିନ।"
+        },
+        {
+            q: "ହରି ଗୋଟିଏ କାମକୁ ୬ ଦିନରେ ଏବଂ ମଧୁ ୧୨ ଦିନରେ କରନ୍ତି। ଉଭୟ ମିଶି କାମଟିକୁ କେତେ ଦିନରେ କରିବେ?",
+            options: ["୨ ଦିନ", "୩ ଦିନ", "୪ ଦିନ", "୮ ଦିନ"],
+            correct: 2,
+            explanation: "ହରିର ୧ ଦିନ କାମ = ୧/୬, ମଧୁର = ୧/୧୨। ମିଶିଲେ = ୧/୬ + ୧/୧୨ = ୩/୧୨ = ୧/୪। ତେଣୁ ୪ ଦିନ ଲାଗିବ।"
+        },
+        {
+            q: "ଗୋଟିଏ ଯନ୍ତ୍ର ୪ ଘଣ୍ଟାରେ ୧୦୦ ଟି ବୋତଲ ତିଆରି କରେ। ୧ ଘଣ୍ଟାରେ କେତେ ବୋତଲ ତିଆରି କରିବ?",
+            options: ["୨୦", "୨୫", "୪୦", "୧୦"],
+            correct: 1,
+            explanation: "୧ ଘଣ୍ଟାରେ = ୧୦୦ ÷ ୪ = ୨୫ ଟି ବୋତଲ।"
+        },
+        {
+            q: "ଯଦି ୧୫ ଜଣ ଲୋକ ଏକ କାନ୍ଥକୁ ୨୦ ଦିନରେ ତିଆରି କରନ୍ତି, ତେବେ ୩୦ ଜଣ ଲୋକ କେତେ ଦିନରେ କରିବେ?",
+            options: ["୧୦ ଦିନ", "୪୦ ଦିନ", "୧୫ ଦିନ", "୫ ଦିନ"],
+            correct: 0,
+            explanation: "ଲୋକ ସଂଖ୍ୟା ଦୁଇଗୁଣ ହେଲେ, ସମୟ ଅଧା ହେବ। ୨୦ ÷ ୨ = ୧୦ ଦିନ।"
+        },
+        {
+            q: "ରମେଶ ୧/୪ ଅଂଶ କାମ ୨ ଦିନରେ କରେ। ସେ ପୁରା କାମ କେତେ ଦିନରେ କରିବ?",
+            options: ["୪ ଦିନ", "୬ ଦିନ", "୮ ଦିନ", "୧୦ ଦିନ"],
+            correct: 2,
+            explanation: "୧/୪ କାମ ପାଇଁ ୨ ଦିନ। ପୁରା କାମ ପାଇଁ = ୨ × ୪ = ୮ ଦିନ।"
+        },
+        {
+            q: "ଗୀତା ଗୋଟିଏ କାମକୁ ୨୦ ଦିନରେ ଏବଂ ସୀତା ୩୦ ଦିନରେ କରନ୍ତି। ଉଭୟେ ଏକାଠି କଲେ କେତେ ଦିନ ଲାଗିବ?",
+            options: ["୧୦ ଦିନ", "୧୨ ଦିନ", "୧୫ ଦିନ", "୫୦ ଦିନ"],
+            correct: 1,
+            explanation: "୧/୨୦ + ୧/୩୦ = (୩+୨)/୬୦ = ୫/୬୦ = ୧/୧୨। ଉତ୍ତର: ୧୨ ଦିନ।"
+        },
+        {
+            q: "୧୨ ଜଣ ଶ୍ରମିକ ଗୋଟିଏ ପୋଖରୀକୁ ୧୦ ଦିନରେ ଖୋଳିପାରନ୍ତି। ୪ ଜଣ ଶ୍ରମିକ କେତେ ଦିନ ନେବେ?",
+            options: ["୨୦ ଦିନ", "୩୦ ଦିନ", "୪୦ ଦିନ", "୬୦ ଦିନ"],
+            correct: 1,
+            explanation: "୧୨ × ୧୦ = ୧୨୦ (ମୋଟ କାମ)। ୪ ଜଣଙ୍କ ପାଇଁ = ୧୨୦ ÷ ୪ = ୩୦ ଦିନ।"
+        },
+        {
+            q: "A ଗୋଟିଏ କାମକୁ ୫ ଦିନରେ କରେ, B ସେହି କାମକୁ ୫ ଦିନରେ କରେ। ଉଭୟ ମିଶି କେତେ ଦିନରେ କରିବେ?",
+            options: ["୨.୫ ଦିନ", "୫ ଦିନ", "୧୦ ଦିନ", "୧ ଦିନ"],
+            correct: 0,
+            explanation: "ସମାନ ଦକ୍ଷତା ଥିବା ୨ ଜଣ ମିଶିଲେ ସମୟ ଅଧା ହୋଇଯାଏ। ୫ ÷ ୨ = ୨.୫ ଦିନ।"
+        },
+        {
+            q: "ଗୋଟିଏ ବସ୍ ୨ ଘଣ୍ଟାରେ ୮୦ କିମି ଯାଏ। ୫ ଘଣ୍ଟାରେ କେତେ ଯିବ?",
+            options: ["୧୬୦", "୨୦୦", "୨୪୦", "୧୮୦"],
+            correct: 1,
+            explanation: "୧ ଘଣ୍ଟାରେ = ୮୦ ÷ ୨ = ୪୦ କିମି। ୫ ଘଣ୍ଟାରେ = ୪୦ × ୫ = ୨୦୦ କିମି।"
+        },
+        // Questions 11-20
+        {
+            q: "୭ ଜଣ ପୁରୁଷ ଏକ କାମକୁ ୧୨ ଦିନରେ କରନ୍ତି। ୧୪ ଜଣ ପୁରୁଷ କେତେ ଦିନରେ କରିବେ?",
+            options: ["୨୪", "୬", "୮", "୧୦"],
+            correct: 1,
+            explanation: "ଲୋକ ଦ୍ୱିଗୁଣିତ ହେଲେ, ସମୟ ଅଧା ହେବ। ୧୨/୨ = ୬ ଦିନ।"
+        },
+        {
+            q: "ଯଦି ୩ ଟି କଲମର ଦାମ ୧୫ ଟଙ୍କା, ତେବେ ୭ ଟି କଲମର ଦାମ କେତେ?",
+            options: ["୨୧ ଟଙ୍କା", "୩୦ ଟଙ୍କା", "୩୫ ଟଙ୍କା", "୪୫ ଟଙ୍କା"],
+            correct: 2,
+            explanation: "୧ କଲମ = ୧୫ ÷ ୩ = ୫ ଟଙ୍କା। ୭ କଲମ = ୭ × ୫ = ୩୫ ଟଙ୍କା।"
+        },
+        {
+            q: "ଗୋଟିଏ ଟ୍ୟାଙ୍କକୁ ୨ଟି ପାଇପ୍ ଯଥାକ୍ରମେ ୧୦ ଘଣ୍ଟା ଓ ୧୫ ଘଣ୍ଟାରେ ପୂର୍ଣ୍ଣ କରନ୍ତି। ଉଭୟ ଖୋଲା ରହିଲେ କେତେ ସମୟ ଲାଗିବ?",
+            options: ["୫ ଘଣ୍ଟା", "୬ ଘଣ୍ଟା", "୮ ଘଣ୍ଟା", "୧୨ ଘଣ୍ଟା"],
+            correct: 1,
+            explanation: "୧/୧୦ + ୧/୧୫ = (୩+୨)/୩୦ = ୫/୩୦ = ୧/୬। ଉତ୍ତର: ୬ ଘଣ୍ଟା।"
+        },
+        {
+            q: "ରାଜୁ ୩ ଦିନରେ ୧/୩ ଅଂଶ କାମ କରେ। ସେ ୯ ଦିନରେ କେତେ କାମ କରିବ?",
+            options: ["୧/୨", "ସମ୍ପୂର୍ଣ୍ଣ କାମ", "୨/୩", "୧/୪"],
+            correct: 1,
+            explanation: "୩ ଦିନରେ ୧/୩। ତେଣୁ ୧ ଦିନରେ ୧/୯। ୯ ଦିନରେ ୯ × ୧/୯ = ୧ (ସମ୍ପୂର୍ଣ୍ଣ କାମ)।"
+        },
+        {
+            q: "୧୦ ଟି ଘୋଡା ୧୦ ଦିନରେ ୧୦ ବସ୍ତା ଚଣା ଖାଆନ୍ତି। ୧ ଟି ଘୋଡା ୧ ବସ୍ତା ଚଣା କେତେ ଦିନରେ ଖାଇବ?",
+            options: ["୧ ଦିନ", "୧୦ ଦିନ", "୧୦୦ ଦିନ", "୫ ଦିନ"],
+            correct: 1,
+            explanation: "୧ ଘୋଡା ୧୦ ଦିନରେ ୧ ବସ୍ତା ଖାଏ (କାରଣ ୧୦ ଘୋଡା ୧୦ ବସ୍ତା ଖାଉଛନ୍ତି)। ଉତ୍ତର: ୧୦ ଦିନ।"
+        },
+        {
+            q: "କ ଓ ଖ ମିଶି ଏକ କାମକୁ ୪ ଦିନରେ କରନ୍ତି। ଯଦି କ ଏକା ୧୨ ଦିନ ନିଏ, ତେବେ ଖ ଏକା କେତେ ଦିନ ନେବ?",
+            options: ["୬ ଦିନ", "୮ ଦିନ", "୫ ଦିନ", "୧୦ ଦିନ"],
+            correct: 0,
+            explanation: "୧/୪ - ୧/୧୨ = ୩/୧୨ - ୧/୧୨ = ୨/୧୨ = ୧/୬। ଉତ୍ତର: ୬ ଦିନ।"
+        },
+        {
+            q: "ଯଦି ୨୦ ଜଣ ଲୋକ ୧୦ ଦିନରେ ୫୦୦ ମିଟର ରାସ୍ତା ତିଆରି କରନ୍ତି, ତେବେ ୧ ଦିନରେ କେତେ ମିଟର ହେବ?",
+            options: ["୨୫", "୫୦", "୧୦", "୫"],
+            correct: 1,
+            explanation: "୫୦୦ ÷ ୧୦ = ୫୦ ମିଟର।"
+        },
+        {
+            q: "୮ ଜଣ ଲୋକ ଗୋଟିଏ କାମକୁ ୨୪ ଦିନରେ କରନ୍ତି। ୧୨ ଜଣ ଲୋକ କେତେ ଦିନରେ କରିବେ?",
+            options: ["୧୨ ଦିନ", "୧୬ ଦିନ", "୧୮ ଦିନ", "୨୦ ଦିନ"],
+            correct: 1,
+            explanation: "(୮ × ୨୪) ÷ ୧୨ = ୧୯୨ ÷ ୧୨ = ୧୬ ଦିନ।"
+        },
+        {
+            q: "ଗୋଟିଏ କାମର ୨/୫ ଅଂଶ କରିବାକୁ ୪ ଦିନ ଲାଗେ। ପୁରା କାମ ପାଇଁ କେତେ ଦିନ ଲାଗିବ?",
+            options: ["୮ ଦିନ", "୧୦ ଦିନ", "୧୨ ଦିନ", "୫ ଦିନ"],
+            correct: 1,
+            explanation: "୨/୫ = ୪ ଦିନ। ୧ ଅଂଶ = ୪ × ୫/୨ = ୧୦ ଦିନ।"
+        },
+        {
+            q: "ରାମ ପ୍ରତିଦିନ ୮ ଘଣ୍ଟା କାମ କରି ଏକ କାମକୁ ୧୦ ଦିନରେ ସାରେ। ପ୍ରତିଦିନ ୧୦ ଘଣ୍ଟା କାମ କଲେ କେତେ ଦିନ ଲାଗିବ?",
+            options: ["୬ ଦିନ", "୮ ଦିନ", "୧୨ ଦିନ", "୫ ଦିନ"],
+            correct: 1,
+            explanation: "ମୋଟ ଘଣ୍ଟା = ୮ × ୧୦ = ୮୦। ଦିନ = ୮୦ ÷ ୧୦ = ୮ ଦିନ।"
+        },
+        // Questions 21-30
+        {
+            q: "ମୀନା ୧ ଘଣ୍ଟାରେ ୨୦ ପୃଷ୍ଠା ଲେଖିପାରେ। ୩୦ ମିନିଟରେ ସେ କେତେ ପୃଷ୍ଠା ଲେଖିବ?",
+            options: ["୧୫", "୧୦", "୫", "୨୦"],
+            correct: 1,
+            explanation: "୩୦ ମିନିଟ୍ ହେଉଛି ୧ ଘଣ୍ଟାର ଅଧା। ତେଣୁ ୨୦ ର ଅଧା = ୧୦ ପୃଷ୍ଠା।"
+        },
+        {
+            q: "୪୦ ଜଣ ଛାତ୍ରଙ୍କ ପାଇଁ ୩୦ ଦିନର ଖାଦ୍ୟ ଅଛି। ୨୦ ଜଣ ଛାତ୍ର ଚାଲିଗଲେ ଖାଦ୍ୟ କେତେ ଦିନ ଯିବ?",
+            options: ["୪୫ ଦିନ", "୬୦ ଦିନ", "୧୫ ଦିନ", "୯୦ ଦିନ"],
+            correct: 1,
+            explanation: "ଛାତ୍ର ସଂଖ୍ୟା ଅଧା ହେଲେ (୪୦ ରୁ ୨୦), ଖାଦ୍ୟ ଦୁଇଗୁଣ ଦିନ ଯିବ। ୩୦ × ୨ = ୬୦।"
+        },
+        {
+            q: "A ର କାର୍ଯ୍ୟ ଦକ୍ଷତା B ର ଦୁଇଗୁଣ। B ଯଦି ଏକ କାମକୁ ୧୨ ଦିନରେ କରେ, A କେତେ ଦିନରେ କରିବ?",
+            options: ["୨୪ ଦିନ", "୬ ଦିନ", "୧୨ ଦିନ", "୪ ଦିନ"],
+            correct: 1,
+            explanation: "A ଦ୍ରୁତ ଗତିରେ କାମ କରେ (ଦୁଇଗୁଣ)। ତେଣୁ ସମୟ ଅଧା ଲାଗିବ। ୧୨ ÷ ୨ = ୬ ଦିନ।"
+        },
+        {
+            q: "ଗୋଟିଏ କାର ୬୦ କିମି/ଘଣ୍ଟା ବେଗରେ ଗଲେ ୪ ଘଣ୍ଟା ସମୟ ନିଏ। ୮୦ କିମି/ଘଣ୍ଟା ବେଗରେ ଗଲେ କେତେ ସମୟ ନେବ?",
+            options: ["୨ ଘଣ୍ଟା", "୩ ଘଣ୍ଟା", "୫ ଘଣ୍ଟା", "୩.୫ ଘଣ୍ଟା"],
+            correct: 1,
+            explanation: "ମୋଟ ଦୂରତା = ୬୦ × ୪ = ୨୪୦ କିମି। ସମୟ = ୨୪୦ ÷ ୮୦ = ୩ ଘଣ୍ଟା।"
+        },
+        {
+            q: "୧୦ ଜଣ ମହିଳା ଏକ କାମକୁ ୫ ଦିନରେ କରନ୍ତି। ୫ ଜଣ ମହିଳା କେତେ ଦିନରେ କରିବେ?",
+            options: ["୫ ଦିନ", "୧୦ ଦିନ", "୧୫ ଦିନ", "୨୦ ଦିନ"],
+            correct: 1,
+            explanation: "ଲୋକ କମିଲେ ସମୟ ବଢିବ। (୧୦ × ୫) ÷ ୫ = ୧୦ ଦିନ।"
+        },
+        {
+            q: "ରବି ଏବଂ କବି ମିଶି ଏକ କାମକୁ ୬ ଦିନରେ କରନ୍ତି। ରବି ଏକା ୧୦ ଦିନରେ କଲେ, କବି କେତେ ଦିନରେ କରିବ?",
+            options: ["୧୫ ଦିନ", "୧୨ ଦିନ", "୨୦ ଦିନ", "୩୦ ଦିନ"],
+            correct: 0,
+            explanation: "୧/୬ - ୧/୧୦ = (୫-୩)/୩୦ = ୨/୩୦ = ୧/୧୫। ଉତ୍ତର: ୧୫ ଦିନ।"
+        },
+        {
+            q: "ଗୋଟିଏ କାମକୁ ୧୬ ଜଣ ଲୋକ ୩୦ ଦିନରେ କରନ୍ତି। ୨୪ ଦିନରେ ସାରିବା ପାଇଁ କେତେ ଲୋକ ଦରକାର?",
+            options: ["୨୦", "୧୮", "୨୫", "୧୫"],
+            correct: 0,
+            explanation: "ମୋଟ କାମ = ୧୬ × ୩୦ = ୪୮୦। ଲୋକ ଦରକାର = ୪୮୦ ÷ ୨୪ = ୨୦ ଜଣ।"
+        },
+        {
+            q: "ଯଦି ୫ ଟି ଖେଳଣାର ଦାମ ୨୦୦ ଟଙ୍କା, ତେବେ ୧୨ ଟି ଖେଳଣାର ଦାମ କେତେ?",
+            options: ["୪୦୦", "୪୮୦", "୫୦୦", "୬୦୦"],
+            correct: 1,
+            explanation: "୧ ଟିର ଦାମ = ୨୦୦ ÷ ୫ = ୪୦। ୧୨ ଟିର ଦାମ = ୧୨ × ୪୦ = ୪୮୦ ଟଙ୍କା।"
+        },
+        {
+            q: "ଗୋଟିଏ କାମର ୩/୪ ଅଂଶ ସରିବା ପରେ ଆଉ କେତେ ଅଂଶ ବାକି ରହିଲା?",
+            options: ["୧/୨", "୧/୪", "୧/୩", "୨/୪"],
+            correct: 1,
+            explanation: "ସମ୍ପୂର୍ଣ୍ଣ କାମ = ୧। ବାକି = ୧ - ୩/୪ = ୧/୪।"
+        },
+        {
+            q: "ରାମ, ଶ୍ୟାମ ଏବଂ ଯଦୁ ଗୋଟିଏ କାମକୁ ଯଥାକ୍ରମେ ୧୨, ୧୫ ଏବଂ ୨୦ ଦିନରେ କରନ୍ତି। ତିନିଜଣ ମିଶିଲେ କେତେ ଦିନ ଲାଗିବ?",
+            options: ["୪ ଦିନ", "୫ ଦିନ", "୬ ଦିନ", "୧୦ ଦିନ"],
+            correct: 1,
+            explanation: "ଲ.ସା.ଗୁ (12, 15, 20) = 60. ଦକ୍ଷତା: 5, 4, 3. ମୋଟ = 12. ସମୟ = 60/12 = 5 ଦିନ।"
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let userAnswers = [];
+
+    const quizScreen = document.getElementById('quiz-screen');
+    const resultScreen = document.getElementById('result-screen');
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const nextBtn = document.getElementById('next-btn');
+    const currentQSpan = document.getElementById('current-q');
+    const totalQSpan = document.getElementById('total-q');
+    const scoreSpan = document.getElementById('score');
+    const explanationList = document.getElementById('explanation-list');
+
+    // Initialize
+    totalQSpan.textContent = questions.length;
+    loadQuestion();
+
+    function loadQuestion() {
+        // Reset state
+        nextBtn.style.display = 'none';
+        optionsEl.innerHTML = '';
+        
+        const currentQ = questions[currentQuestionIndex];
+        currentQSpan.textContent = currentQuestionIndex + 1;
+        questionEl.textContent = currentQ.q;
+
+        currentQ.options.forEach((opt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.textContent = opt;
+            btn.onclick = () => checkAnswer(index, btn);
+            optionsEl.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedIndex, btnElement) {
+        const currentQ = questions[currentQuestionIndex];
+        const correctIndex = currentQ.correct;
+        const options = document.querySelectorAll('.option-btn');
+
+        // Store user answer
+        userAnswers.push({
+            qIndex: currentQuestionIndex,
+            selected: selectedIndex,
+            correct: correctIndex
+        });
+
+        // Disable all buttons
+        options.forEach(opt => opt.disabled = true);
+
+        // Highlight selected
+        if (selectedIndex === correctIndex) {
+            btnElement.classList.add('correct');
+            score++;
+        } else {
+            btnElement.classList.add('wrong');
+            // Highlight the correct one as well so they know
+            options[correctIndex].classList.add('correct');
+        }
+
+        nextBtn.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        quizScreen.classList.add('hide');
+        nextBtn.classList.add('hide');
+        resultScreen.style.display = 'block';
+        scoreSpan.textContent = score;
+
+        // Generate Explanations
+        explanationList.innerHTML = '';
+        questions.forEach((q, index) => {
+            const div = document.createElement('div');
+            div.className = 'explanation-item';
+            
+            const isCorrect = userAnswers[index] && userAnswers[index].selected === q.correct;
+            const status = isCorrect ? "✅ ଠିକ୍ (Correct)" : "❌ ଭୁଲ (Wrong)";
+
+            div.innerHTML = `
+                <div class="exp-q">${index + 1}. ${q.q}</div>
+                <div style="font-size:0.9rem; color:#666; margin: 5px 0;">ଆପଣଙ୍କ ସ୍ଥିତି: ${status}</div>
+                <div class="exp-ans">ସଠିକ୍ ଉତ୍ତର: ${q.options[q.correct]}</div>
+                <div class="exp-text"><strong>ବ୍ୟାଖ୍ୟା:</strong> ${q.explanation}</div>
+            `;
+            explanationList.appendChild(div);
+        });
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        userAnswers = [];
+        resultScreen.style.display = 'none';
+        quizScreen.classList.remove('hide');
+        nextBtn.classList.remove('hide'); // Actually it will be hidden by loadQuestion
+        loadQuestion();
+    }
+</script>
+
+</body>
+</html>
